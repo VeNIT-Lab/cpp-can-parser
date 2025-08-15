@@ -1,8 +1,8 @@
 #ifndef CANDatabase_H
 #define CANDatabase_H
 
+#include <cstdint>
 #include <string>
-#include <memory>
 #include <stdexcept>
 #include <map>
 #include <vector>
@@ -24,9 +24,9 @@ namespace CppCAN {
  * - Minimum (optional)
  * - Maximum (optional)
  * - Comment (optional)
- * - Choices (optional) : map of unsigned int -> std::string (so one can associate 
+ * - Choices (optional) : map of unsigned int -> std::string (so one can associate
  *                        a string value to an integer value)
- * 
+ *
  * All the attributes except for the comment and choices must be defined at the instanciation
  * and are immutable.
  */
@@ -35,7 +35,7 @@ public:
   struct CPP_CAN_PARSER_EXPORT Range {
     static Range fromString(const std::string& minstr, const std::string& maxstr);
 
-    Range() = default; 
+    Range() = default;
     Range(long m, long mm);
 
     bool defined;
@@ -98,8 +98,8 @@ private:
 };
 
 /**
- * @brief Object that gathers all the properties of a single frame. 
- * 
+ * @brief Object that gathers all the properties of a single frame.
+ *
  * A CANFrame instance is characterized by the following properties:
  * - Name
  * - CAN ID
@@ -107,18 +107,18 @@ private:
  * - Period (optional)
  * - Comment (optional)
  * - List of signals
- * 
+ *
  * The name, CAN ID and DLC must be defined at the instanciation and are immutable.
  * The comment and period can respectivelly be changed with setComment() and setPeriod().
  * The list of signals can be modified with addSignal() and removeSignal(). Use clear()
  * to empty the signals' list.
- * 
+ *
  * One can access the CANSignal with at() or operator[]. **Be careful as both will throw
  * a std::out_of_range if the given key does noy match any signal in the frame.** To check
- * if a signal is present, use contains(). Signals can be found both by their start bit 
+ * if a signal is present, use contains(). Signals can be found both by their start bit
  * or their name.
- * 
- * CANFrame also behaves like a regular iterable: it defines the functions begin(), end(), 
+ *
+ * CANFrame also behaves like a regular iterable: it defines the functions begin(), end(),
  * cbegin(), cend(), ... You can traverse all the signals of the frame in a range-for loop
  * or use the standard library's algorithms !
  */
@@ -141,7 +141,7 @@ public:
    * @param dlc DLC of the frame
    * @param comment Optional comment for the frame
    */
-  CANFrame(const std::string& name, unsigned long long can_id, unsigned int dlc, 
+  CANFrame(const std::string& name, unsigned long long can_id, unsigned int dlc,
            unsigned int period = 0, const std::string& comment = "");
 
   CANFrame(const CANFrame&) = default;
@@ -192,7 +192,7 @@ public:
    * @see at
    */
   const CANSignal& operator[](const std::string& name) const;
-  
+
   /**
    * @brief Fetches the signal with the given name.
    * @see at
@@ -203,12 +203,12 @@ public:
    * @brief Fetches the signal with the given name.
    */
   const CANSignal& at(const std::string& name) const;
-  
+
   /**
    * @brief Fetches the signal with the given name.
    */
   CANSignal& at(const std::string& name);
-  
+
   /**
    * @return true if a signal with the given name is already registered with the current frame.
    */
@@ -245,7 +245,7 @@ public:
 
   void clear();
 
-  friend void swap(CANFrame& first, CANFrame& second);
+  friend void swap(CANFrame& first, CANFrame& second) noexcept;
 
 private:
   std::string name_;
@@ -253,7 +253,7 @@ private:
   unsigned int dlc_;
   unsigned int period_;
   std::string comment_;
-  
+
   container_type map_;
 };
 
@@ -261,8 +261,8 @@ private:
  * @brief A CAN database object
  *
  * A CAN database is an object regrouping frames and their signals' descriptions.
- * 
- * Public API: 
+ *
+ * Public API:
  * - contains to check if a frame name/frame id is registered in the database
  * - at to get the frame associated with the given frame name/frame id
  *   the same operations are available with operator[]
@@ -311,7 +311,7 @@ public:
   };
 
   using container_type = std::map<IDKey, CANFrame, IntIDKeyCompare>;
-  
+
   using iterator = container_type::iterator;
   using const_iterator = container_type::const_iterator;
   using reverse_iterator = container_type::reverse_iterator;
@@ -325,7 +325,7 @@ public:
 
   /**
    * @brief Creates a CANDatabase object that has been constructed from a file
-   * @param filename Name of the source file 
+   * @param filename Name of the source file
    */
   CANDatabase(const std::string& filename);
 
@@ -357,17 +357,17 @@ public:
    * @brief Get the frame with the given frame name
    */
   const CANFrame& at(unsigned long long frame_id) const;
-  
+
   /**
    * @brief Get the frame with the given frame name
    */
   CANFrame& at(unsigned long long frame_id);
-  
+
   /**
    * @brief Get the frame with the given frame id
    */
   const CANFrame& at(const std::string& frame_name) const;
-  
+
   /**
    * @brief Get the frame with the given frame id
    */
@@ -377,17 +377,17 @@ public:
    * @brief Get the frame with the given frame id
    */
   const CANFrame& operator[](unsigned long long frame_idx) const;
-  
+
   /**
    * @brief Get the frame with the given frame id
    */
    CANFrame& operator[](unsigned long long frame_idx);
-  
+
   /**
    * @brief Get the frame with the given frame name
    */
   const CANFrame& operator[](const std::string& frame_name) const;
-  
+
   /**
    * @brief Get the frame with the given frame name
    */
@@ -406,32 +406,32 @@ public:
   /**
    * @brief Swaps the content of the two given databases
    */
-  friend void swap(CANDatabase& first, CANDatabase& second);
+  friend void swap(CANDatabase& first, CANDatabase& second) noexcept;
   /**
    * @return File name of the source file if the database was constructed from a file.
    *         Otherwise, returns an empty string.
    */
   const std::string& filename() const;
 
-  
+
   /* Set of methods used to behave like a STL container.
      Very useful for range-based for loops. Inspired from std::map but
-     some features are missing. 
-     
+     some features are missing.
+
      The iterators have a random order. */
 public:
   iterator begin();
   const_iterator begin() const;
   const_iterator cbegin() const;
-  
+
   iterator end();
   const_iterator end() const;
   const_iterator cend() const;
-  
+
   reverse_iterator rbegin();
   const_reverse_iterator rbegin() const;
   const_reverse_iterator crbegin() const;
-  
+
   reverse_iterator rend();
   const_reverse_iterator rend() const;
   const_reverse_iterator crend() const;
@@ -448,6 +448,10 @@ private:
   class CANDatabaseImpl;
   CANDatabaseImpl* impl;
 };
+
+void swap(CANDatabase &first, CANDatabase &second) noexcept;
+
+void swap(CANFrame &first, CANFrame &second) noexcept;
 
 /**
  * @brief Exception type for the library's operations

@@ -140,7 +140,7 @@ void CANFrame::clear() {
   map_.clear();
 }
 
-void CppCAN::swap(CANFrame & first, CANFrame & second) {
+void CppCAN::swap(CANFrame & first, CANFrame & second) noexcept {
   std::swap(first.name_, second.name_);
   std::swap(first.can_id_, second.can_id_);
   std::swap(first.dlc_, second.dlc_);
